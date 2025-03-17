@@ -1,0 +1,9 @@
+motion_model_debugger:
+  ros__parameters:
+    n_particles: 300
+    sigma_xx: 0.2    # Desvio padrão para posição x (metros)
+    sigma_yy: 0.5    # Desvio padrão para posição y (metros)
+    sigma_zz: 0.01    # Desvio padrão para posição z (metros)
+    sigma_RR: 0.1    # Desvio padrão para rotação em roll (radianos)
+    sigma_PP: 0.1    # Desvio padrão para rotação em pitch (radianos)
+    sigma_YY: 1.0    # Desvio padrão para rotação em yaw (radianos)
