@@ -35,13 +35,13 @@ RUN apt-get install -y libasio-dev
 
 RUN apt-get install -y ros-foxy-diagnostic-updater
 RUN apt-get install -y ros-foxy-vision-msgs
+RUN apt-get install -y ros-foxy-ublox-msgs
 # --------------------------------------------- #
 
 # VineSLAM workspace preparation
 # --------------------------------------------- #
 RUN mkdir -p /root/ros2_ws/src
 WORKDIR /root/ros2_ws/src
-RUN git clone https://gitlab.inesctec.pt/agrob/vineslam_stack/vineslam -b feature/dynamic_topological_map
 RUN git clone https://github.com/KumarRobotics/ublox -b foxy-devel
 WORKDIR /root/ros2_ws
 # --------------------------------------------- #

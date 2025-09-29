@@ -1,0 +1,14 @@
+services:
+  rviz:
+    build: .
+    container_name: rviz_container
+    environment:
+      - DISPLAY=${DISPLAY}
+      - QT_X11_NO_MITSHM=1
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - ../../vineslam/:/root/ros2_ws/src:rw
+    network_mode: host
+    mem_limit: 20gb
+    stdin_open: true
+    tty: true
