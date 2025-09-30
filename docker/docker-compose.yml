@@ -9,6 +9,6 @@ services:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
       - ../../vineslam/:/root/ros2_ws/src:rw
     network_mode: host
-    mem_limit: 20gb
+    mem_limit: 25gb
     stdin_open: true
     tty: true
