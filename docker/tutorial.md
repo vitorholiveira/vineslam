@@ -25,3 +25,14 @@ cd src/
 colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release
 source install/setup.bash
 ```
+
+### 5. Run gazebo with husky robot
+```bash
+ros2 launch husky_gazebo gazebo.launch.py
+```
+
+### 6. Run VineSLAM node
+```bash
+cd /vineslam/test/test_slam_node
+ros2 launch run.launch.py
+```
