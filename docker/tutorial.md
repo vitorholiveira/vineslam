@@ -36,3 +36,10 @@ ros2 launch husky_gazebo gazebo.launch.py
 cd /vineslam/test/test_slam_node
 ros2 launch run.launch.py
 ```
+
+### 7. Run husky_with_velodyne node
+```bash
+ros2 launch husky_velodyne_description husky_velodyne.launch.py
+ros2 topic list | grep velodyne
+```
+

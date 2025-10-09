@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="husky_velodyne">
+
+  <!-- Include Husky base -->
+  <xacro:include filename="$(find-pkg-share husky_description)/urdf/husky.urdf.xacro"/>
+
+  <!-- Include Velodyne (VLP-16) model -->
+  <xacro:include filename="$(find-pkg-share velodyne_description)/urdf/VLP16.urdf.xacro"/>
+
+  <!-- Instantiate Husky -->
+  <xacro:husky_base name="husky"/>
+
+  <!-- Mount Velodyne on top -->
+  <xacro:VLP16 parent="base_link" name="velodyne">
+    <origin xyz="0 0 0.5" rpy="0 0 0"/>
+  </xacro:VLP16>
+
+</robot>
+
