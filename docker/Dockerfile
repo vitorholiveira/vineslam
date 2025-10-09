@@ -1,65 +1,73 @@
 FROM ubuntu:20.04
 
-# Generic
-# --------------------------------------------- #
-RUN apt update
-RUN apt-get install -y git
-RUN apt-get install -y vim
-RUN apt-get install -y wget
+# ==============================================
+# Generic setup
+# ==============================================
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt update && apt-get install -y \
+    git vim wget curl gnupg2 lsb-release software-properties-common
 
 RUN ln -fs /usr/share/zoneinfo/UTC /etc/localtime
-RUN DEBIAN_FRONTEND=noninteractive
-RUN apt-get install -y software-properties-common
-# --------------------------------------------- #
-
-# ROS installation
-# --------------------------------------------- #
 ENV LANG C.UTF-8
 ENV LC_ALL C.UTF-8
 
-RUN apt update && apt install -y curl gnupg2 lsb-release
-RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key  -o /usr/share/keyrings/ros-archive-keyring.gpg
+# ==============================================
+# ROS 2 Foxy installation
+# ==============================================
+RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key \
+    -o /usr/share/keyrings/ros-archive-keyring.gpg && \
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] \
+    http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" \
+    > /etc/apt/sources.list.d/ros2.list
 
-RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/ros2.list > /dev/null
+RUN apt update && apt install -y ros-foxy-desktop python3-colcon-common-extensions
 
-RUN apt update
-RUN DEBIAN_FRONTEND=noninteractive apt install -y ros-foxy-desktop
-RUN apt-get install -y python3-colcon-*
-# --------------------------------------------- #
+# ==============================================
+# Husky + simulation packages
+# ==============================================
+RUN apt install -y \
+    ros-foxy-husky-gazebo \
+    ros-foxy-husky-simulator \
+    ros-foxy-husky-viz \
+    ros-foxy-teleop-twist-keyboard
 
-# VineSLAM dependencies installation
-# --------------------------------------------- #
-RUN apt-get install -y libopencv-dev
-RUN apt-get install -y libboost-dev
-RUN apt-get install -y libasio-dev
+# ==============================================
+# Add Velodyne (3D LiDAR) packages
+# ==============================================
+RUN apt install -y \
+    ros-foxy-velodyne \
+    ros-foxy-velodyne-msgs \
+    ros-foxy-velodyne-description \
+    ros-foxy-velodyne-gazebo-plugins
 
-RUN apt-get install -y ros-foxy-diagnostic-updater
-RUN apt-get install -y ros-foxy-vision-msgs
-RUN apt-get install -y ros-foxy-ublox-msgs
-# --------------------------------------------- #
+# ==============================================
+# VineSLAM dependencies
+# ==============================================
+RUN apt-get install -y \
+    libopencv-dev \
+    libboost-dev \
+    libasio-dev \
+    ros-foxy-diagnostic-updater \
+    ros-foxy-vision-msgs \
+    ros-foxy-ublox-msgs
 
+# ==============================================
 # VineSLAM workspace preparation
-# --------------------------------------------- #
+# ==============================================
 RUN mkdir -p /root/ros2_ws/src
 WORKDIR /root/ros2_ws/src
 RUN git clone https://github.com/KumarRobotics/ublox -b foxy-devel
 WORKDIR /root/ros2_ws
-# --------------------------------------------- #
 
-# CUDA installation
-# --------------------------------------------- #
-#RUN apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/3bf863cc.pub
-#RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-ubuntu2004.pin
-#RUN mv cuda-ubuntu2004.pin /etc/apt/preferences.d/cuda-repository-pin-600
-#RUN add-apt-repository "deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/ /"
-#RUN apt-get update
-#RUN apt-get install -y cuda
-# --------------------------------------------- #
+# ==============================================
+# Build overlay workspace (for Velodyne + Husky)
+# ==============================================
+RUN . /opt/ros/foxy/setup.sh && colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release
 
-# ROS environment variables setting
-# --------------------------------------------- #
-COPY ./ros_entrypoint.sh /root/.
-RUN chmod 777 /root/ros_entrypoint.sh
-ENTRYPOINT ["/root/ros_entrypoint.sh"]
+# ==============================================
+# Environment setup
+# ==============================================
+RUN echo "source /opt/ros/foxy/setup.bash" >> ~/.bashrc && \
+    echo "source /root/ros2_ws/install/setup.bash" >> ~/.bashrc
+SHELL ["/bin/bash", "-c"]
 CMD ["bash"]
-# --------------------------------------------- #

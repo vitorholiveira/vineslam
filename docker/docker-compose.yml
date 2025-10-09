@@ -5,9 +5,12 @@ services:
     environment:
       - DISPLAY=${DISPLAY}
       - QT_X11_NO_MITSHM=1
+      - LIBGL_ALWAYS_INDIRECT=0
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
       - ../../vineslam/:/root/ros2_ws/src:rw
+    devices:
+      - /dev/dri:/dev/dri
     network_mode: host
     mem_limit: 25gb
     stdin_open: true
